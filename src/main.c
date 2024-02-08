@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 #include "parsers.h"
 #include "logic.h"
 #include "constants.h"
@@ -100,6 +101,10 @@ int main(int argc, char *argv[]) {
     int var_count = parse_num(argv[1]);
     if (var_count>MAX_VARS){
         printf("The program cannot process more than 26 variables.\nThe program will terminate\n");
+        exit(EXIT_FAILURE);
+    }
+    if (strlen(argv[2])>1000){
+        printf("Maximum input length exceeded\nThe program will terminate\n");
         exit(EXIT_FAILURE);
     }
     print_header(var_count,argv[2]);
