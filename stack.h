@@ -4,10 +4,34 @@
 #include <stdbool.h>
 #include "constants.h"
 
+/* A stack of boolean values
+ *
+ * Direct interaction with BoolStack's fields is not recommend,
+ * use functions from stack.h instead
+ */
 typedef struct BoolStack {
-    bool elems[MAX_VARS]; // Since the maximum number of values remembered in a stack
-    int size;
+    bool *base; // pointer to the base of the stack (the lowest element)
+    int size; // size of the stack. The top value of the stack is always located at (base+size-1)
 } BoolStack;
-void push(BoolStack stack);
+
+/*
+ * Initialise BoolStack
+ */
+BoolStack createBStack();
+
+/*
+ * Returns the top of the stack, doesn't modify the stack
+ */
+bool peek(BoolStack *stack);
+
+/*
+ * Removes the top element from the stack and returns it
+ */
+bool pop(BoolStack *stack);
+
+/*
+ * Puts a boolean value onto the stack
+ */
+void push(BoolStack *stack, bool val);
 
 #endif //W05_STACK_H
