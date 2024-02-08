@@ -54,7 +54,7 @@ void solve_for_vars(int var_count, int vars, char* formula){
             // Then bit ands that number with vars
             // If vars has a 0 in that bit - the result will be 0
             // If vars has a 1 in that bit - the result will be > 0
-            val = ((vars & (1<<(currentChar-'a'))) > 0);
+            val = ((vars & (1<<(('a'+var_count-1)-currentChar))) > 0);
             printf(" ");
         }
         else if isdigit(currentChar){
