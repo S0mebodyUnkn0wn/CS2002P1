@@ -1,4 +1,4 @@
-all: main.o parsers.o logic.o stack.o
+all: ../main.o parsers.o logic.o stack.o
 	rm -f ttable
 	clang main.o parsers.o logic.o stack.o -o ttable -Wall -Wextra -g
 
