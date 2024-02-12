@@ -1,4 +1,6 @@
+//
 // Stack operations
+//
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -23,7 +25,7 @@ void push(BoolStack *stack, bool val){ // Find function desc in stack.h
     if ((new_pt = (bool*) realloc(stack->base, (size + 1) * sizeof(bool)))){
         stack->base = new_pt;
     } else {
-        printf("Encountered an error while extending a stack, the program will terminate");
+        printf("Encountered an error while extending a stack, the program will terminate\n");
         exit(EXIT_FAILURE);
     }
     // End code adapted from https://en.cppreference.com/w/c/memory/realloc
@@ -35,7 +37,8 @@ void push(BoolStack *stack, bool val){ // Find function desc in stack.h
 bool pop(BoolStack *stack){ // Find function desc in stack.h
     int size = stack->size;
     if (size<=0){
-        return 0;
+        printf("Error: tried to retrieve an item from an empty stack, the program will terminate\n");
+        exit(EXIT_FAILURE);
     }
     bool val = peek(stack);
     // Since calling realloc with 0 size causes undefined (implementation-defined before C23) behaviour (see https://en.cppreference.com/w/c/memory/realloc),
@@ -51,7 +54,7 @@ bool pop(BoolStack *stack){ // Find function desc in stack.h
     if ((new_pt = (bool*) realloc(stack->base, (size - 1) * sizeof(bool)))){
         stack->base = new_pt;
     } else {
-        printf("Encountered an error while shrinking a stack, the program will terminate");
+        printf("Encountered an error while shrinking a stack, the program will terminate\n");
         exit(EXIT_FAILURE);
     }
     // End code adapted from https://en.cppreference.com/w/c/memory/realloc

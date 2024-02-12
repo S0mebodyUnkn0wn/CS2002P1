@@ -16,7 +16,7 @@ output_dir = ./bin
 # Rule for building the exec file.
 # We know that all .o files will be in the $(output_dir) (since we put them there),
 # so we append $(output_dir)/ to each requirement to tell clang where to find them.
-ttable: main.o parsers.o stack.o
+ttable: main.o parsers.o stack.o printers.o
 	clang $(foreach req, $+, $(output_dir)/$(req)) -o $(output_dir)/$@ -Wall -Wextra -g
 
 # Pattern rule for building object files from source
