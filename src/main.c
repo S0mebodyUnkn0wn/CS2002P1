@@ -4,115 +4,121 @@
 #include <ctype.h>
 #include <string.h>
 #include "parsers.h"
-#include "logic.h"
 #include "constants.h"
 #include "stack.h"
 
-
-bool eval_compound(bool a, bool b, char operator){
-    switch (operator) {
-        case '-' :
-            return not(a);
-        case '|':
-            return or(a, b);
-        case '&':
-            return and(a, b);
-        case '#':
-            return xor(a, b);
-        case '>':
-            return impl(a, b);
-        case '=':
-            return eq(a, b);
-        default:
-            printf("Encountered an error while processing an operator:"
-                   "\nCould not parse '%c'"
-                   "\nThe program will terminate\n", operator);
-            exit(EXIT_FAILURE);
-    }
-}
-
+/*
+ * Break int vars into bits, and print them
+ */
 void print_bits(int var_count, int vars) {
     BoolStack bits = createBStack(); // Since we have already implemented the stack, might as well use it here
-    for (int i=0; i<var_count;i++){
-        push(&bits,vars%2);
-        vars>>=1;
+    for (int i = 0; i < var_count; i++) {
+        push(&bits, vars % 2); // Push last bit of vars into the stack (or just 0 if vars has run out of bits)
+        vars >>= 1; // RShift the stack, thus making second to last bit the last bit
     }
-    while (bits.size>0){
-        printf("%d ",pop(&bits));
+    while (bits.size > 0) {
+        printf("%d ", pop(&bits)); // Since we used a stack the order of bits get reversed (exactly what we want)
     }
-    printf(": ");
+    printf(": "); // Print a vertical separator
 }
 
-void solve_for_vars(int var_count, int vars, char* formula){
-    BoolStack buffer = createBStack();
-    int i = 0; // index
-    char currentChar = formula[i];
-    print_bits(var_count,vars);
-    do{
-        bool val;
-        if isalpha(currentChar){
-            // Gets the number of a bit that would contain the value of n-th variable
-            // Then bit ands that number with vars
-            // If vars has a 0 in that bit - the result will be 0
-            // If vars has a 1 in that bit - the result will be > 0
-            val = ((vars & (1<<(('a'+var_count-1)-currentChar))) > 0);
+/*
+ * Print a line of formula's intermediate and final results for given vars
+ */
+void print_for_vars(int var_count, int vars, char *formula) {
+    BoolStack buffer = createBStack();// <- a bool buffer, stores evaluated, but not yet consumed values,
+    // should be reduced to len of 1 after the function has been processed
+    int i = 0; // <- char index
+
+    char currentChar = formula[i]; // <- char to be processed. Each char evaluates to a value, which is pushed onto buffer
+
+    // Print var values used for this line
+    print_bits(var_count, vars);
+
+    do {
+        bool val; // <- this operation's value
+
+        // Evaluate val based on the character, also print the result of the application (unless a literal or var)
+        if isalpha(currentChar) {            // Char is a var
+                                                // evaluates to the var value, defined by int vars
+            val = ((vars & (1 << (('a' + var_count - 1) - currentChar))) > 0);
             printf(" ");
-        }
-        else if isdigit(currentChar){
-            val = currentChar=='1';
+        } else if isdigit(currentChar) {     // Char is a literal
+            val = currentChar == '1';           // evaluates to itself
             printf(" ");
-        }
-        else if (currentChar=='-'){
-            val = not(pop(&buffer));
-            printf("%d",val);
-        } else{
-            bool b = pop(&buffer);
+        } else if (currentChar == '-') {     // Char is a negation operator
+            val = !pop(&buffer);          //  evaluates to negative of the last value
+            printf("%d", val);
+        } else {                             // Char is a compound operator
+            bool b = pop(&buffer);        // evaluates to the result of the operator application on last two values
             bool a = pop(&buffer);
-            val = eval_compound(a,b,currentChar);
-            printf("%d",val);
+            val = eval_compound(a, b, currentChar);
+            printf("%d", val);
         }
-        push(&buffer,val);
+
+        // Place val into buffer to be consumed later
+        push(&buffer, val);
         currentChar = formula[++i];
-    } while (currentChar != 0);
-    if (buffer.size!=1){
+    } while (currentChar != 0); // Exit the loop when we get to the null char (End of the string)
+
+    // if buf is not reduced to size of 1, the formula is not formed correctly, return an error
+    if (buffer.size != 1) {
         printf("Could not parse the formula");
         exit(EXIT_FAILURE);
     }
-    printf(" :   %d\n",peek(&buffer));
+    // Print the result
+    printf(" :   %d\n", peek(&buffer));
 }
 
+/*
+ * Prints a header for the truth table
+ */
 void print_header(int var_count, char *string) {
-    int total_len = 0;
-    for (int i = 'a'; i<var_count+'a';i++){
-        total_len+=printf("%c ",i);
+    int total_len = 0; // <- length of the header, used to draw appropriately sized separator
+    for (int i = 'a'; i < var_count + 'a'; i++) {
+        total_len += printf("%c ", i); // Print vars
     }
-    total_len+=printf(": %s : Result\n",string);
-    for (int i = 0; i<total_len-1;i++){ // - 1 for the \n
+    total_len += printf(": %s : Result\n", string); // print the formula
+    for (int i = 0; i < total_len -
+                        1; i++) { // Print the separator of length total_len - 1 ( -1 is for the \n, which is not visible)
         printf("=");
     }
     printf("\n");
 }
 
+/*
+ * The main function
+ */
 int main(int argc, char *argv[]) {
-    if (argc != 3){ // expect 3 arguments, because argv[0] is path to the executable
-        printf("Unexpected number of arguments supplied (%d instead of 2)\n",argc-1);
+    // Verify arg count
+    if (argc != 3) { // expect 3 arguments, because argv[0] is path to the executable
+        printf("Unexpected number of arguments supplied (%d instead of 2)\n", argc - 1);
         return 1;
     }
     int var_count = parse_num(argv[1]);
-    if (var_count>MAX_VARS){
+    // Verify var_count is in bounds
+    if (var_count > MAX_VARS) {
         printf("The program cannot process more than 26 variables.\nThe program will terminate\n");
         exit(EXIT_FAILURE);
     }
-    if (strlen(argv[2])>1000){
-        printf("Maximum input length exceeded\nThe program will terminate\n");
+    if (var_count < 1) {
+        printf("The program requires for at least one variable to be present in the formula.\nThe program will terminate");
         exit(EXIT_FAILURE);
     }
-    print_header(var_count,argv[2]);
-    for (int i = 0; i < 1<<(var_count);i++){
-        solve_for_vars(var_count, i,argv[2]);
+    // Verify that the formula is shorter than 1000 chars
+    if (strlen(argv[2]) > 1000) {
+        printf("Maximum input length (1000 chars) exceeded\nThe program will terminate\n");
+        exit(EXIT_FAILURE);
+    }
+    // Build the table
+    print_header(var_count, argv[2]);
+    for (int i = 0; i < 1 << (var_count); i++) {
+        // We can use binary interpretation of "i" as values for the formula's variables,
+        // Since "i" will go through all possible combinations
+        print_for_vars(var_count, i, argv[2]);
     }
 
-    //printf(formula);
+    // If we got here, the program has successfully printed the table, yay!
     return 0;
 }
 

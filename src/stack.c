@@ -1,22 +1,21 @@
-
 // Stack operations
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "stack.h"
 
-BoolStack createBStack(){
+BoolStack createBStack(){ // Find function desc in stack.h
     BoolStack new_stack;
     new_stack.base = NULL;
     new_stack.size = 0;
     return new_stack;
 }
 
-bool peek(BoolStack *stack){
+bool peek(BoolStack *stack){ // Find function desc in stack.h
     return *(stack->base + stack->size - 1);
 }
 
-void push(BoolStack *stack, bool val){
+void push(BoolStack *stack, bool val){ // Find function desc in stack.h
     int size = stack->size;
     bool* new_pt;
 
@@ -33,7 +32,7 @@ void push(BoolStack *stack, bool val){
     stack->size++;
 }
 
-bool pop(BoolStack *stack){
+bool pop(BoolStack *stack){ // Find function desc in stack.h
     int size = stack->size;
     if (size<=0){
         return 0;
