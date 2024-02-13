@@ -17,7 +17,7 @@ output_dir = ./bin
 # We know that all .o files will be in the $(output_dir) (since we put them there),
 # so we append $(output_dir)/ to each requirement to tell clang where to find them.
 ttable: main.o parsers.o stack.o printers.o
-	clang $(foreach req, $+, $(output_dir)/$(req)) -o $(output_dir)/$@ -Wall -Wextra -g
+	clang $(foreach req, $+, $(output_dir)/$(req)) -o $@ -Wall -Wextra -g
 
 # Pattern rule for building object files from source
 %.o : %.c ./bin
@@ -29,4 +29,4 @@ ttable: main.o parsers.o stack.o printers.o
 
 # Clean ./bin (Removes EVERYTHING in bin)
 clean:
-	rm -f $(output_dir)/*
+	rm -f $(output_dir)/* ttable
