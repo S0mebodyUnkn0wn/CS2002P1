@@ -1,1 +1,1 @@
-/home/somebody/CSCoursework/CS2002/W05/Makefile
+../Makefile
