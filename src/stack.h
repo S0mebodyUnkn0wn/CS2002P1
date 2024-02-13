@@ -34,4 +34,8 @@ bool pop(BoolStack *stack);
  */
 void push(BoolStack *stack, bool val);
 
+/*
+ * Frees memory allocated to the stack
+ */
+void destruct(BoolStack *stack);
 #endif //W05_STACK_H

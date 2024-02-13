@@ -20,8 +20,12 @@ ttable: main.o parsers.o stack.o printers.o
 	clang $(foreach req, $+, $(output_dir)/$(req)) -o $(output_dir)/$@ -Wall -Wextra -g
 
 # Pattern rule for building object files from source
-%.o : %.c
+%.o : %.c ./bin
 	clang $< -o $(output_dir)/$@ -c -Wall -Wextra -g
+
+# Create a bin directory, if it doesn't exist
+./bin:
+	mkdir bin
 
 # Clean ./bin (Removes EVERYTHING in bin)
 clean:

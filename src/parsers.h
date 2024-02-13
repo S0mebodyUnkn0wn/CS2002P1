@@ -11,7 +11,7 @@ int parse_num(char* string);
 /*
  * Evaluates the result of "a" *operator* "b"
  *
- * Terminates the program if unable to parse the operator
+ * Returns -1 if unable to parse the operator
  */
-bool eval_compound(bool a, bool b, char operator);
+int eval_compound(bool a, bool b, char operator);
 #endif //W05_PARSERS_H

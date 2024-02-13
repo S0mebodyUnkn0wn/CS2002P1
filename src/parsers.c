@@ -8,7 +8,7 @@
 #define xor(X, Y) ((X) && !(Y)) || (!(X) && (Y))
 #define impl(X, Y) (!(X) || (Y))
 
-bool eval_compound(bool a, bool b, char operator) { // Find function desc in parsers.h
+int eval_compound(bool a, bool b, char operator) { // Find function desc in parsers.h
     switch (operator) {
         case '|':
             return a || b;
@@ -21,10 +21,8 @@ bool eval_compound(bool a, bool b, char operator) { // Find function desc in par
         case '=':
             return a == b;
         default:
-            printf("\nEncountered an error while processing an operator:"
-                   "\n    Could not parse '%c'"
-                   "\nThe program will terminate\n", operator);
-            exit(EXIT_FAILURE);
+            return -1;
+
     }
 }
 

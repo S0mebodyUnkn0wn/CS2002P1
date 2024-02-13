@@ -24,8 +24,9 @@ void push(BoolStack *stack, bool val){ // Find function desc in stack.h
     // Code below adapted from examples on https://en.cppreference.com/w/c/memory/realloc
     if ((new_pt = (bool*) realloc(stack->base, (size + 1) * sizeof(bool)))){
         stack->base = new_pt;
-    } else {
+    } else { // if new_pt is a fasle (a NULL pointer) something went wrong and we should exit
         printf("Encountered an error while extending a stack, the program will terminate\n");
+        free(stack->base); // cleanup
         exit(EXIT_FAILURE);
     }
     // End code adapted from https://en.cppreference.com/w/c/memory/realloc
@@ -38,6 +39,7 @@ bool pop(BoolStack *stack){ // Find function desc in stack.h
     int size = stack->size;
     if (size<=0){
         printf("Error: tried to retrieve an item from an empty stack, the program will terminate\n");
+        destruct(stack); // free the stack
         exit(EXIT_FAILURE);
     }
     bool val = peek(stack);
@@ -55,11 +57,17 @@ bool pop(BoolStack *stack){ // Find function desc in stack.h
         stack->base = new_pt;
     } else {
         printf("Encountered an error while shrinking a stack, the program will terminate\n");
+        destruct(stack); // free the stack
         exit(EXIT_FAILURE);
     }
     // End code adapted from https://en.cppreference.com/w/c/memory/realloc
 
     stack->size--;
     return val;
+}
+
+void destruct(BoolStack *stack){
+    free(stack->base);
+    stack->size = 0;
 }
 
