@@ -39,7 +39,15 @@ void print_for_vars(int var_count, int vars, char *formula) {// Find function de
         if (isalpha(currentChar)&& islower(currentChar)) {
                                              // Char is a var
                                                 // evaluates to the var value, defined by int vars
-            val = ((vars & (1 << (('a' + var_count - 1) - currentChar))) > 0);
+            int var_index = ('a' + var_count - 1) - currentChar;
+            if (var_index>=var_count || var_index < 0){
+                printf("\nEncountered an error while processing a variable:\n"
+                              "    could not parse variable: '%c'\n"
+                              "The program will terminate\n",currentChar);
+                destruct(&buffer);
+                exit(EXIT_FAILURE);
+            }
+            val = ((vars & (1 << (var_index))) > 0);
             printf(" ");
         } else if (currentChar=='1' || currentChar=='0') {     // Char is a literal
             val = currentChar == '1';           // evaluates to itself
@@ -69,7 +77,7 @@ void print_for_vars(int var_count, int vars, char *formula) {// Find function de
 
     // if buf is not reduced to size of 1, the formula is not formed correctly, return an error
     if (buffer.size != 1) {
-        printf("\nCould solve the formula, likely not enough operands were supplied\nThe program will terminate\n");
+        printf("\nCould solve the formula, likely not enough operators were supplied\nThe program will terminate\n");
         destruct(&buffer); // Free whatever is left in the buffer
         exit(EXIT_FAILURE);
     }

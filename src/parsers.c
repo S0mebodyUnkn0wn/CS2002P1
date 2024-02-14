@@ -30,8 +30,8 @@ int parse_num(char* string){ // Find function desc in parsers.h
     long lout = strtol(string,NULL,10);
     if (errno == ERANGE || lout > INT_MAX){
         printf("Encountered an error while parsing a number:\n"
-               "    Number: \"%s\" is to big to fit into an integer\n"
-               "The program will terminate\n",string);
+                      "    Number: \"%s\" is to big to fit into an integer\n"
+                      "The program will terminate\n",string);
         exit(EXIT_FAILURE);
     }
 

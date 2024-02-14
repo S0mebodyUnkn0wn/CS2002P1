@@ -11,7 +11,7 @@
  */
 typedef struct BoolStack {
     bool *base; // pointer to the base of the stack (the lowest element)
-    int size; // size of the stack. The top value of the stack is always located at (base+size-1)
+    unsigned int size; // size of the stack. The top value of the stack is always located at (base+size-1)
 } BoolStack;
 
 /*
